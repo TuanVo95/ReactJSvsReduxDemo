@@ -8,7 +8,6 @@ import Pagination from './components/Pagination';
 import queryString from 'query-string';
 import PostFillterFrom from './components/PostFillterForm';
 import Clock from './components/Clock';
-import Betterclock from './components/Betterclock';
 //import {useSelector,useDispatch} from 'react-redux';
 //import {increment,decrement} from './actions';
 
@@ -105,7 +104,9 @@ function App() {
       title_like:newfilters.searchTerm
     });
   }
+  
   const [showClock,setShowClock] = useState(true);
+
   return (
     <div className="app">
       {/* <h1> counter {counterState} </h1>
@@ -120,7 +121,6 @@ function App() {
      <Pagination pagination={pagination} onPageChange={handlePageChange} />
      {showClock&&<Clock></Clock> } 
      <button onClick={()=>setShowClock(false)}>Hide Clock</button>
-     <Betterclock></Betterclock>
     </div>
   );
 }
