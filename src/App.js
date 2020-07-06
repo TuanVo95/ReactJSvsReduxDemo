@@ -5,6 +5,9 @@ import TodoList from './components/TodoList';
 import TodoForm from './components/TodoForm';
 import PostList from './components/PostList/Index';
 import Pagination from './components/Pagination';
+import queryString from 'query-string';
+import PostFillterFrom from './components/PostFillterForm';
+import Clock from './components/Clock';
 //import {useSelector,useDispatch} from 'react-redux';
 //import {increment,decrement} from './actions';
 
@@ -47,35 +50,62 @@ function App() {
   const [postList, setPostList] = useState([]);
   const [pagination, setpagination] = useState({
     _page:1,
-    litmit:10,
+    _limit:10,
     _totalRows:50
+  });
+
+  const [fillters, setFillters]= useState({
+    _page:1,
+    _limit:10,
   });
 
   function handlePageChange(newpage)
   {
       console.log('New page', newpage);
+      setFillters(
+        {
+          ...fillters,
+          _page:newpage
+        }
+      );
   } 
 
   useEffect(()=>{
     async function getPostData()
     {
       try {
-        const  requestUrl='http://js-post-api.herokuapp.com/api/posts?_limit=10&_page=1';
+        const pramasQueryString = queryString.stringify(fillters);
+        const  requestUrl=`http://js-post-api.herokuapp.com/api/posts?${pramasQueryString}`;
         const response = await fetch(requestUrl);
         const responseJson = await response.json();
-        const {data} = responseJson;
+        const {data,pagination} = responseJson;
         setPostList(data);
+        setpagination(pagination);
         console.log("get post list");
       } catch (error) {
         console.log("Failed to fetch post list", error.message);
       }
     }
     getPostData();
-  },[]);
+  },[fillters]);
+
+
 
   useEffect(()=>{
     console.log("get to do list");
   });
+
+  function handleFilltersChange(newfilters)
+  {
+    console.log('New filter', newfilters);
+    setFillters({
+      ...fillters,
+      _page:1,
+      title_like:newfilters.searchTerm
+    });
+  }
+  
+  const [showClock,setShowClock] = useState(true);
 
   return (
     <div className="app">
@@ -86,8 +116,11 @@ function App() {
       {/* <ColorBox/>
       <TodoForm onToDoFormSubmit={handleTodoFormSubmit} />
       <TodoList todos={todoList} onTodoClick={handleTodoclick} /> */}
+      <PostFillterFrom onSubmit={handleFilltersChange} ></PostFillterFrom>
      <PostList posts={postList} ></PostList>
      <Pagination pagination={pagination} onPageChange={handlePageChange} />
+     {showClock&&<Clock></Clock> } 
+     <button onClick={()=>setShowClock(false)}>Hide Clock</button>
     </div>
   );
 }
